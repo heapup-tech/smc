@@ -1,5 +1,4 @@
 import { ISolBinList } from './types'
-import axios from 'axios'
 import {
   SOL_BIN_DOWNLOAD_PREFIX_PATH,
   SOL_BIN_FILE_NAME,
@@ -10,27 +9,24 @@ import { sha256 } from '@noble/hashes/sha256'
 import { bytesToHex } from '@noble/hashes/utils'
 
 const getSolBinList = async () => {
-  const response = await axios.get<ISolBinList>(SOL_BIN_VERSION_LIST_URL)
-
+  const response = await fetch(SOL_BIN_VERSION_LIST_URL)
   if (response.status !== 200) {
     process.exit(1)
   }
-  return response.data
+  return response.json<ISolBinList>()
 }
 
 const downloadBin = async (url: string, fileName: string): Promise<void> => {
   console.log('Downloading from ' + url)
-  const response = await axios.get(url, {
-    responseType: 'arraybuffer'
-  })
 
-  if (response.status !== 200) {
+  const response = await fetch(url)
+
+  if (!response.ok) {
     console.log('Download Failed')
     process.exit(1)
   }
 
-  const fileData = Buffer.from(response.data, 'binary')
-  await fs.writeFile(fileName, fileData)
+  await fs.writeFile(fileName, await response.arrayBuffer())
 }
 
 const download = async () => {
@@ -42,7 +38,6 @@ const download = async () => {
   const targetHash = binList.builds.filter(
     (build) => build.path === commitPath
   )[0].sha256
-  console.log(targetHash)
 
   const downloadURL = SOL_BIN_DOWNLOAD_PREFIX_PATH + commitPath
 
