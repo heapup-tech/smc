@@ -3,7 +3,7 @@ import {
   SOL_BIN_DOWNLOAD_PREFIX_PATH,
   SOL_BIN_FILE_NAME,
   SOL_BIN_VERSION_LIST_URL
-} from './constant'
+} from './constants'
 import fs from 'fs/promises'
 import { sha256 } from '@noble/hashes/sha256'
 import { bytesToHex } from '@noble/hashes/utils'
