@@ -1,16 +1,12 @@
-import { Compiler } from './bindings/compiler'
-import { CompilerCore } from './bindings/core'
 import { ISolJson } from './types'
-import * as soljson from '../soljson'
 import { setupBindings } from './bindings'
 import { isNil } from './utils'
 import { formatFatalError } from './formatters'
 import translate from './translate'
 
-const solJson = soljson as ISolJson
 const Module = module.constructor as any
 
-export const wrapper = (soljson: ISolJson) => {
+export const wrapper = (solJson: ISolJson) => {
   const { core, compiler, methodFlags } = setupBindings(solJson)
 
   return {
@@ -178,5 +174,3 @@ function translateOutput(outputRaw: string, libraries: string) {
 
   return JSON.stringify(output)
 }
-
-wrapper(solJson)

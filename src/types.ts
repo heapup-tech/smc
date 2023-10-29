@@ -57,3 +57,16 @@ export interface LibraryAddresses {
 export interface LinkReferences {
   [libraryLabel: string]: Array<{ start: number; length: number }>
 }
+
+export interface ICompilerInput {
+  language: 'Solditidy' | 'Yul' | 'SolidityAST'
+  sources: Record<
+    string,
+    | {
+        keccak256?: Hex
+        urls: string[]
+        ast: Object
+      }
+    | string
+  >
+}

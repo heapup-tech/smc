@@ -72,6 +72,7 @@ export class Compiler {
     )
 
     if (this.core.isVersion6OrNewer) {
+      // input (jsontext), callback (ptr), callback_context (ptr) -> output (jsontext)
       boundFunctionSolidity = bindSolcMethod(
         this.solJson,
         'solidity_compile',
@@ -80,6 +81,7 @@ export class Compiler {
         null
       )
     } else {
+      // input (jsontext), callback (ptr) -> output (jsontext)
       boundFunctionSolidity = bindSolcMethod(
         this.solJson,
         'solidity_compile',
