@@ -1,94 +1,95 @@
+import translate from '../translate'
 import { ISolJson } from '../types'
 import { isNil } from '../utils'
 import { bindSolcMethod, bindSolcMethodWithFallbackFunc } from './helpers'
 
-export const setupCore = (solJson: ISolJson) => {
-  const core = {
-    alloc: bindAlloc(solJson),
-    license: bindLicense(solJson),
-    version: bindVersion(solJson),
-    reset: bindReset(solJson)
-  }
-  const helpers = {
-    addFunction: unboundAddFunction.bind(this, solJson),
-    removeFunction: unboundRemoveFunction.bind(this, solJson),
-    copyFromCString: unboundCopyFromCString.bind(this, solJson),
-    copyToCString: unboundCopyToCString.bind(this, solJson, core.alloc)
-  }
+export class CompilerCore {
+  private solJson: ISolJson
 
-  return {
-    ...core,
-    ...helpers
-  }
-}
+  public alloc
+  public license
+  public version
+  public reset
+  public isVersion6OrNewer = true
 
-export const bindAlloc = (solJson: ISolJson) => {
-  const allocBinding = bindSolcMethod(
-    solJson,
-    'solidity_alloc',
-    'number',
-    ['number'],
-    null
-  )
+  constructor(solJson: ISolJson) {
+    this.solJson = solJson
 
-  if (isNil(allocBinding)) {
-    return solJson._malloc
+    this.alloc = this.bindAlloc()
+    this.license = this.bindLicense()
+    this.version = this.bindVersion()
+    this.reset = this.bindReset()
   }
 
-  return allocBinding
-}
+  bindAlloc() {
+    const allocBinding = bindSolcMethod(
+      this.solJson,
+      'solidity_alloc',
+      'number',
+      ['number'],
+      null
+    )
 
-export const bindLicense = (solJson: ISolJson) => {
-  return bindSolcMethodWithFallbackFunc(
-    solJson,
-    'solidity_license',
-    'string',
-    [],
-    'license',
-    () => {}
-  )
-}
+    if (isNil(allocBinding)) {
+      return this.solJson._malloc
+    }
 
-export const bindVersion = (solJson: ISolJson) => {
-  return bindSolcMethodWithFallbackFunc(
-    solJson,
-    'solidity_version',
-    'string',
-    [],
-    'version'
-  )
-}
-export const bindReset = (solJson: ISolJson) => {
-  return bindSolcMethod(solJson, 'solidity_reset', null, [], null)
-}
+    return allocBinding
+  }
 
-export const unboundAddFunction = (
-  solJson: ISolJson,
-  func: Function,
-  signature?: string
-) => {
-  return (solJson.addFunction || solJson.Runtime.addFunction)(func, signature)
-}
+  bindLicense() {
+    return bindSolcMethodWithFallbackFunc(
+      this.solJson,
+      'solidity_license',
+      'string',
+      [],
+      'license',
+      () => {}
+    )
+  }
 
-export const unboundRemoveFunction = (solJson: ISolJson, ptr: number) => {
-  return (solJson.removeFunction || solJson.Runtime.removeFunction)(ptr)
-}
+  bindVersion() {
+    return bindSolcMethodWithFallbackFunc(
+      this.solJson,
+      'solidity_version',
+      'string',
+      [],
+      'version'
+    )
+  }
+  bindReset() {
+    return bindSolcMethod(this.solJson, 'solidity_reset', null, [], null)
+  }
 
-export const unboundCopyToCString = (
-  solJson: ISolJson,
-  alloc: Function,
-  str: string,
-  ptr: number
-) => {
-  const length = solJson.lengthBytesUTF8(str)
+  addFunction(func: Function, signature?: string) {
+    return (this.solJson.addFunction || this.solJson.Runtime.addFunction)(
+      func,
+      signature
+    )
+  }
 
-  const buffer = alloc(length + 1)
+  removeFunction(ptr: number) {
+    return (this.solJson.removeFunction || this.solJson.Runtime.removeFunction)(
+      ptr
+    )
+  }
 
-  solJson.stringToUTF8(str, buffer, length + 1)
-  solJson.setValue(ptr, buffer, '*')
-}
+  copyToCString(str: string, ptr: number) {
+    const length = this.solJson.lengthBytesUTF8(str)
 
-export const unboundCopyFromCString = (solJson: ISolJson, ptr: number) => {
-  const copyFromCString = solJson.UTF8ToString || solJson.Pointer_stringify
-  return copyFromCString(ptr)
+    const buffer = this.alloc(length + 1)
+
+    this.solJson.stringToUTF8(str, buffer, length + 1)
+    this.solJson.setValue(ptr, buffer, '*')
+  }
+
+  copyFromCString(ptr: number) {
+    const copyFromCString =
+      this.solJson.UTF8ToString || this.solJson.Pointer_stringify
+    return copyFromCString(ptr)
+  }
+
+  versionToSemver(version: string) {
+    return translate.versionToSemver.bind(this, version)
+  }
 }
