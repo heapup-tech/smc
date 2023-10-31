@@ -22,8 +22,11 @@
 }
  */
 
+// see parseInput
+
 export type CodeLang = 'Solidity' | 'Yul' | 'SolidityAST'
 export type Hex = `0x${string}`
+export type Address = Hex
 export type EvmVersion =
   | 'homestead'
   | 'tangerineWhistle'
@@ -39,6 +42,22 @@ export type EvmVersion =
 
 export interface CompileOptimizer {
   enabled: boolean
+  runs: number
+  details: {
+    peephole: boolean
+    inliner: boolean
+    jumpdestRemover: boolean
+    orderLiterals: boolean
+    deduplicate: boolean
+    cse: boolean
+    constantOptimizer: boolean
+    yul: boolean
+    simpleCounterForLoopUncheckedIncrement: boolean
+    yulDetails: {
+      stackAllocation: boolean
+      optimizerSteps: string
+    }
+  }
 }
 
 interface CompileDebug {
@@ -46,14 +65,44 @@ interface CompileDebug {
   debugInfo: string[]
 }
 
+interface CompileLibrary {
+  [key: string]: Address
+}
+
+interface CompileMetadata {
+  appendCBOR: boolean
+  useLiteralContent: boolean
+  bytecodeHash: 'none' | 'ipfs' | 'bzzr1'
+}
+
+interface CompileOutputSelection {
+  [index: string]: Record<string, string[]>
+}
+
+interface ModelChecker {
+  bmcLoopIterations: number
+  contracts: Record<string, string[]>
+  divModNoSlacks: boolean
+  engine: 'all' | 'bmc' | 'chc' | 'none'
+  extCalls: string
+  invariants: string[]
+  printQuery: boolean
+  showProvedSafe: boolean
+  showUnproved: boolean
+  showUnsupported: boolean
+  solvers: string[]
+  targets: string[]
+  timeout: number
+}
+
 export type CompileSettings = {
   debug: CompileDebug
   evmVersion: EvmVersion
-  libraries: any
-  metadata: any
-  modelChecker: any
+  libraries: Record<string, CompileLibrary>
+  metadata: CompileMetadata
+  modelChecker: ModelChecker
   optimizer: CompileOptimizer
-  outputSelection: any
+  outputSelection: CompileOutputSelection
   remappings: string[]
   stopAfter: 'parsing'
   viaIR: boolean
@@ -68,7 +117,7 @@ export interface CompileSource {
 export interface CompileInput {
   language: CodeLang
   sources: Record<string, CompileSource>
-  settings: {}
+  settings: CompileSettings
 }
 
 export interface CompileOutput {}
