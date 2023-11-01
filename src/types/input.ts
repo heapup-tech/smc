@@ -96,27 +96,76 @@ interface ModelChecker {
   timeout: number
 }
 
-export type CompileSettings = {
-  debug: Debug
+export type Settings = {
+  /**
+   * Debugging settings
+   */
+  debug?: Debug
+  /**
+   * Version of the EVM to compile for
+   */
   evmVersion: EvmVersion
-  libraries: Record<string, Library>
-  metadata: Metadata
+  /**
+   * Addresses of the libraries
+   */
+  libraries?: Record<string, Library>
+  /**
+   * Metadata settings
+   */
+  metadata?: Metadata
   modelChecker: ModelChecker
-  optimizer: Optimizer
+  /**
+   * Optimizer settings
+   */
+  optimizer?: Optimizer
   outputSelection: OutputSelection
-  remappings: string[]
-  stopAfter: 'parsing'
+  /**
+   * Sorted list of remappings
+   */
+  remappings?: string[]
+  /**
+   * Stop compilation after the given stage. Currently only "parsing" is valid here
+   */
+  stopAfter?: 'parsing'
+  /**
+   * Change compilation pipeline to go through the Yul intermediate representation.
+   * @default false
+   */
   viaIR: boolean
 }
 
-export interface CompileSource {
-  content: string
-  keccak256: Hex
-  urls: string[]
+export type Source = (
+  | {
+      /**
+       * Source code string
+       */
+      content: string
+      /**
+       * keccak256 hash of the source file
+       */
+      keccak256?: Hex
+    }
+  | {
+      /**
+       * Source file path
+       *
+       * @example ['bzzr://56ab...', 'ipfs://Qma...', '/tmp/path/to/file.sol']
+       */
+      urls: string[]
+    }
+) & {
+  /**
+   * keccak256 hash of the source file
+   */
+  keccak256?: Hex
 }
 
 export interface CompileInput {
+  /**
+   * Source code language, Currently supported are "Solidity", "Yul" and "SolidityAST"
+   *
+   */
   language: CodeLang
-  sources: Record<string, CompileSource>
-  settings: CompileSettings
+  sources: Record<string, Source>
+  settings?: Settings
 }
