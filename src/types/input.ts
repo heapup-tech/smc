@@ -24,9 +24,10 @@
 
 // see parseInput
 
+import { Hex, Address } from './misc'
+
 export type CodeLang = 'Solidity' | 'Yul' | 'SolidityAST'
-export type Hex = `0x${string}`
-export type Address = Hex
+
 export type EvmVersion =
   | 'homestead'
   | 'tangerineWhistle'
@@ -40,7 +41,7 @@ export type EvmVersion =
   | 'paris'
   | 'shanghai'
 
-export interface CompileOptimizer {
+export interface Optimizer {
   enabled: boolean
   runs: number
   details: {
@@ -60,22 +61,22 @@ export interface CompileOptimizer {
   }
 }
 
-interface CompileDebug {
+interface Debug {
   revertStrings: 'default' | 'strip' | 'debug' | 'verboseDebug'
   debugInfo: string[]
 }
 
-interface CompileLibrary {
+interface Library {
   [key: string]: Address
 }
 
-interface CompileMetadata {
+interface Metadata {
   appendCBOR: boolean
   useLiteralContent: boolean
   bytecodeHash: 'none' | 'ipfs' | 'bzzr1'
 }
 
-interface CompileOutputSelection {
+interface OutputSelection {
   [index: string]: Record<string, string[]>
 }
 
@@ -96,13 +97,13 @@ interface ModelChecker {
 }
 
 export type CompileSettings = {
-  debug: CompileDebug
+  debug: Debug
   evmVersion: EvmVersion
-  libraries: Record<string, CompileLibrary>
-  metadata: CompileMetadata
+  libraries: Record<string, Library>
+  metadata: Metadata
   modelChecker: ModelChecker
-  optimizer: CompileOptimizer
-  outputSelection: CompileOutputSelection
+  optimizer: Optimizer
+  outputSelection: OutputSelection
   remappings: string[]
   stopAfter: 'parsing'
   viaIR: boolean
@@ -119,5 +120,3 @@ export interface CompileInput {
   sources: Record<string, CompileSource>
   settings: CompileSettings
 }
-
-export interface CompileOutput {}

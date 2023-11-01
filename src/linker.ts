@@ -1,6 +1,6 @@
 import assert from 'assert'
 
-import { LibraryAddresses, LinkReferences } from './types'
+import { LibraryAddresses, LinkReferences } from './types/bind'
 import { keccak_256 } from '@noble/hashes/sha3'
 import { isNil, isObject } from './utils'
 

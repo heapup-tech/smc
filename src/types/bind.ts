@@ -1,18 +1,3 @@
-export type Hex = `0x${string}`
-
-export interface ISolBinList {
-  builds: {
-    path: string
-    version: string
-    longVersion: string
-    keccak256: Hex
-    sha256: Hex
-    urls: string[]
-  }[]
-  releases: Record<string, string>
-  latestRelease: string
-}
-
 export type SolJsonMethodName = string
 export type SolJsonMethodReturn = any
 export type SolJsonMethodArgs = string[]
@@ -56,17 +41,4 @@ export interface LibraryAddresses {
  */
 export interface LinkReferences {
   [libraryLabel: string]: Array<{ start: number; length: number }>
-}
-
-export interface ICompilerInput {
-  language: 'Solditidy' | 'Yul' | 'SolidityAST'
-  sources: Record<
-    string,
-    | {
-        keccak256?: Hex
-        urls: string[]
-        ast: Object
-      }
-    | string
-  >
 }
