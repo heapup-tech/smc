@@ -62,8 +62,22 @@ export interface Optimizer {
 }
 
 interface Debug {
-  revertStrings: 'default' | 'strip' | 'debug' | 'verboseDebug'
-  debugInfo: string[]
+  /**
+   * How to treat revert (and require) reason strings
+   *
+   * @enum 'default'
+   * @enum 'strip'
+   * @enum 'debug'
+   * @enum 'verboseDebug'
+   */
+  revertStrings?: 'default' | 'strip' | 'debug' | 'verboseDebug'
+  /**
+   * Optional: How much extra debug information to include in comments in the produced EVM
+   *
+   * location
+   * snippet
+   */
+  debugInfo?: string[]
 }
 
 interface Library {
@@ -104,7 +118,7 @@ export type Settings = {
   /**
    * Version of the EVM to compile for
    */
-  evmVersion: EvmVersion
+  evmVersion?: EvmVersion
   /**
    * Addresses of the libraries
    */
@@ -113,12 +127,12 @@ export type Settings = {
    * Metadata settings
    */
   metadata?: Metadata
-  modelChecker: ModelChecker
+  modelChecker?: ModelChecker
   /**
    * Optimizer settings
    */
   optimizer?: Optimizer
-  outputSelection: OutputSelection
+  outputSelection?: OutputSelection
   /**
    * Sorted list of remappings
    */
@@ -129,9 +143,10 @@ export type Settings = {
   stopAfter?: 'parsing'
   /**
    * Change compilation pipeline to go through the Yul intermediate representation.
+   *
    * @default false
    */
-  viaIR: boolean
+  viaIR?: boolean
 }
 
 export type Source = (
@@ -140,10 +155,6 @@ export type Source = (
        * Source code string
        */
       content: string
-      /**
-       * keccak256 hash of the source file
-       */
-      keccak256?: Hex
     }
   | {
       /**
@@ -160,7 +171,7 @@ export type Source = (
   keccak256?: Hex
 }
 
-export interface CompileInput {
+export type CompileInput = {
   /**
    * Source code language, Currently supported are "Solidity", "Yul" and "SolidityAST"
    *
