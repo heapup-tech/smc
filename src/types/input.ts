@@ -149,27 +149,31 @@ export type Settings = {
   viaIR?: boolean
 }
 
-export type Source = (
-  | {
-      /**
-       * Source code string
-       */
-      content: string
-    }
-  | {
-      /**
-       * Source file path
-       *
-       * @example ['bzzr://56ab...', 'ipfs://Qma...', '/tmp/path/to/file.sol']
-       */
-      urls: string[]
-    }
-) & {
+export type Source =
   /**
-   * keccak256 hash of the source file
+   * content and urls can exist at the same time.
    */
-  keccak256?: Hex
-}
+  (
+    | {
+        /**
+         * Source code string
+         */
+        content: string
+      }
+    | {
+        /**
+         * Source file path
+         *
+         * @example ['bzzr://56ab...', 'ipfs://Qma...', '/tmp/path/to/file.sol']
+         */
+        urls: string[]
+      }
+  ) & {
+    /**
+     * keccak256 hash of the source file
+     */
+    keccak256?: Hex
+  }
 
 export type CompileInput = {
   /**
@@ -177,6 +181,9 @@ export type CompileInput = {
    *
    */
   language: CodeLang
+  /**
+   * required
+   */
   sources: Record<string, Source>
   settings?: Settings
 }
