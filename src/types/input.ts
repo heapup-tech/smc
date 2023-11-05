@@ -42,9 +42,9 @@ export type EvmVersion =
   | 'shanghai'
 
 export interface Optimizer {
-  enabled: boolean
-  runs: number
-  details: {
+  enabled?: boolean
+  runs?: number
+  details?: {
     peephole: boolean
     inliner: boolean
     jumpdestRemover: boolean
