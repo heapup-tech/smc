@@ -26,7 +26,7 @@
 
 import { Hex, Address } from './misc'
 
-export type CodeLang = 'Solidity' | 'Yul' | 'SolidityAST'
+export type Lang = 'Solidity' | 'Yul' | 'SolidityAST'
 
 export type EvmVersion =
   | 'homestead'
@@ -180,10 +180,14 @@ export type CompileInput = {
    * Source code language, Currently supported are "Solidity", "Yul" and "SolidityAST"
    *
    */
-  language: CodeLang
+  language: Lang
   /**
    * required
    */
   sources: Record<string, Source>
+
+  /**
+   * Compiler settings
+   */
   settings?: Settings
 }
